@@ -128,6 +128,8 @@ apps/<app>/tests/
 
 At the end of each phase, do a full review before moving on. The goal is to catch issues early, not after they compound.
 
+The checklist below covers the most common failure points, but it is not exhaustive. Use judgment: read the code critically, think about what could go wrong at runtime, and flag anything that looks fragile, inconsistent, or out of place — even if it's not on the list.
+
 **What to check — in order:**
 
 1. **Models** — field types, `on_delete` choices, `null`/`blank` consistency, `__str__`, `Meta.ordering`, missing `verbose_name` on important fields
