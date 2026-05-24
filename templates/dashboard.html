@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord — TrocLégumes{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3">Bonjour, {{ user.first_name }} !</h1>
+        <p class="text-muted">Voici un résumé de votre activité cette semaine.</p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h5 class="card-title text-success">
+                    <i class="bi bi-shop me-1"></i>Marché cette semaine
+                </h5>
+                <p class="card-text text-muted small">
+                    Les offres de vos fermes suivies apparaîtront ici.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-warning">
+            <div class="card-body">
+                <h5 class="card-title text-warning">
+                    <i class="bi bi-inbox me-1"></i>Commandes en attente
+                </h5>
+                <p class="card-text text-muted small">
+                    Les commandes à accepter ou confirmer apparaîtront ici.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-info">
+            <div class="card-body">
+                <h5 class="card-title text-info">
+                    <i class="bi bi-calculator me-1"></i>Mon compte
+                </h5>
+                <p class="card-text text-muted small">
+                    Votre solde bilatéral apparaîtra ici.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

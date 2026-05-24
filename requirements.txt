@@ -1,0 +1,6 @@
+Django>=5.2
+psycopg2-binary>=2.9
+django-environ>=0.11
+gunicorn>=22.0
+celery[redis]>=5.4
+django-htmx>=1.21
