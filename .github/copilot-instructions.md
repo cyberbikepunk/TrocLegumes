@@ -108,6 +108,14 @@ apps/<app>/tests/
 
 > **Current status:** dev-only, no deployment yet. CI will be wired up before production.
 
+## Logging
+
+- Every module that needs logging declares: `logger = logging.getLogger(__name__)`
+- Use the appropriate level: `DEBUG` for traces, `INFO` for business events, `WARNING` for unexpected states, `ERROR`/`exception` for failures
+- Log meaningful business events: order created, listing expired, payment failed
+- Never use `print()` for diagnostic output — use the logger
+- In dev, logs appear in `docker compose logs web`; in prod they will go to Sentry
+
 ## Git Workflow
 
 - Work directly on `master` — no feature branches
