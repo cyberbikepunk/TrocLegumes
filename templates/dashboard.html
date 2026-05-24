@@ -10,7 +10,37 @@
     </div>
 </div>
 
+{% if not user.farm %}
+<div class="alert alert-warning d-flex align-items-center gap-3 mb-4" role="alert">
+    <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+    <div>
+        Vous n'avez pas encore de ferme.
+        <a href="{% url 'farms:create' %}" class="alert-link">Créez votre ferme</a>
+        pour accéder au marché.
+    </div>
+</div>
+{% endif %}
+
 <div class="row g-3">
+    {% if user.farm %}
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h5 class="card-title text-success">
+                    <i class="bi bi-house-heart me-1"></i>Ma ferme
+                </h5>
+                <p class="card-text fw-semibold mb-1">{{ user.farm.name }}</p>
+                <p class="card-text text-muted small">
+                    {{ user.farm.followers.count }}
+                    abonné{{ user.farm.followers.count|pluralize }}
+                </p>
+                <a href="{% url 'farms:detail' user.farm.pk %}" class="btn btn-sm btn-outline-success">
+                    Voir le profil <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="col-md-4">
         <div class="card h-100 border-success">
             <div class="card-body">

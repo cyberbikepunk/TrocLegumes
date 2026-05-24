@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Les fermes — TrocLégumes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Les fermes</h1>
+    {% if user.is_authenticated and not user.farm %}
+    <a href="{% url 'farms:create' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>Créer ma ferme
+    </a>
+    {% endif %}
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for farm in farms %}
+    <div class="col">
+        <div class="card h-100">
+            {% if farm.logo %}
+            <img src="{{ farm.logo.url }}" class="card-img-top" alt="{{ farm.name }}"
+                 style="height: 180px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ farm.name }}</h5>
+                {% if farm.description %}
+                <p class="card-text text-muted small">{{ farm.description|truncatewords:20 }}</p>
+                {% endif %}
+                {% if farm.address %}
+                <p class="card-text small mb-0">
+                    <i class="bi bi-geo-alt me-1 text-muted"></i>{{ farm.address }}
+                </p>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'farms:detail' farm.pk %}" class="btn btn-sm btn-outline-success">
+                    Voir le profil <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-muted">Aucune ferme inscrite pour le moment.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -22,10 +22,14 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 {% if user.is_authenticated %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'farms:list' %}">Fermes</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Marché</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Mes offres</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Commandes</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Mon compte</a></li>
+                {% if user.farm %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'farms:detail' user.farm.pk %}">Ma ferme</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'farms:create' %}">Créer ma ferme</a></li>
+                {% endif %}
                 {% endif %}
             </ul>
             <ul class="navbar-nav">

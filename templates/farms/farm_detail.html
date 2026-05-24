@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ farm.name }} — TrocLégumes{% endblock %}
+
+{% block extra_css %}
+{% if farm.latitude and farm.longitude %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="d-flex align-items-center gap-3 mb-2">
+            {% if farm.logo %}
+            <img src="{{ farm.logo.url }}" alt="{{ farm.name }}" class="rounded"
+                 style="width: 72px; height: 72px; object-fit: cover;">
+            {% endif %}
+            <div>
+                <h1 class="h2 mb-0">{{ farm.name }}</h1>
+                <span class="text-muted small">
+                    <i class="bi bi-people me-1"></i>{{ followers_count }}
+                    abonné{{ followers_count|pluralize }}
+                </span>
+            </div>
+        </div>
+
+        {% if farm.description %}
+        <p class="text-muted mt-2">{{ farm.description }}</p>
+        {% endif %}
+
+        <div class="d-flex gap-2 flex-wrap mb-3">
+            {% if farm.address %}
+            <span class="badge bg-light text-dark border">
+                <i class="bi bi-geo-alt me-1"></i>{{ farm.address }}
+            </span>
+            {% endif %}
+            {% if farm.phone %}
+            <span class="badge bg-light text-dark border">
+                <i class="bi bi-telephone me-1"></i>{{ farm.phone }}
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="d-flex gap-2">
+            {% if is_own_farm %}
+            <a href="{% url 'farms:update' farm.pk %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil me-1"></i>Modifier ma ferme
+            </a>
+            {% else %}
+            {% include "farms/partials/follow_button.html" %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if farm.latitude and farm.longitude %}
+<div class="card mb-4">
+    <div class="card-body p-0">
+        <div id="map" style="height: 280px; border-radius: 0.375rem;"></div>
+    </div>
+</div>
+{% endif %}
+
+{% if products %}
+<h2 class="h5 mb-3">Nos produits</h2>
+<div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+    {% for product in products %}
+    <div class="col">
+        <div class="card h-100 border-0 bg-light">
+            {% if product.photo %}
+            <img src="{{ product.photo.url }}" class="card-img-top" alt="{{ product.name }}"
+                 style="height: 100px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body py-2 px-3">
+                <p class="card-title mb-0 fw-semibold small">{{ product.name }}</p>
+                <p class="card-text text-muted" style="font-size: 0.75rem;">
+                    {% if product.crop_category.icon %}
+                    <i class="bi bi-{{ product.crop_category.icon }} me-1"></i>
+                    {% endif %}
+                    {{ product.crop_category.name }}
+                </p>
+                <p class="card-text text-success fw-bold small">
+                    {{ product.default_price }} € / {{ product.get_default_unit_display }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if farm.latitude and farm.longitude %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    var map = L.map('map').setView([{{ farm.latitude }}, {{ farm.longitude }}], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    L.marker([{{ farm.latitude }}, {{ farm.longitude }}])
+        .addTo(map)
+        .bindPopup('<strong>{{ farm.name }}</strong>');
+</script>
+{% endif %}
+{% endblock %}

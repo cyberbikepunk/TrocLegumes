@@ -1,0 +1,19 @@
+{% if can_follow %}
+<form id="follow-btn"
+      method="post"
+      action="{% url 'farms:follow_toggle' farm.pk %}"
+      hx-post="{% url 'farms:follow_toggle' farm.pk %}"
+      hx-target="#follow-btn"
+      hx-swap="outerHTML">
+    {% csrf_token %}
+    {% if is_following %}
+    <button type="submit" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-check-circle-fill me-1"></i>Vous suivez cette ferme
+    </button>
+    {% else %}
+    <button type="submit" class="btn btn-success btn-sm">
+        <i class="bi bi-plus-circle me-1"></i>Suivre cette ferme
+    </button>
+    {% endif %}
+</form>
+{% endif %}
