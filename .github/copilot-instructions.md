@@ -13,6 +13,19 @@ See `docs/brainstorm.md` for the full spec and `docs/roadmap.md` for the develop
 - **Static files** — Bootstrap, HTMX and Bootstrap Icons loaded via CDN. No build step.
 - All management commands run inside Docker: `docker compose exec web python manage.py ...`
 
+## Language
+
+- **Code** (Python, HTML attributes, URL slugs, git commits, comments, docstrings) → English
+- **User-facing text** (template content, form labels, model `verbose_name`, choice display values) → French
+- Django i18n (`{% trans %}`, `.po` files) is not used — the app is French-only; hardcode French directly
+
+## Constants
+
+- Never scatter magic values across the codebase — define them once and import them
+- **Model field choices** → use `TextChoices` / `IntegerChoices` as inner classes on the model (e.g. `Listing.Status`, `Order.Status`)
+- **Business logic thresholds** (expiry delays, limits, amounts) → `apps/<app>/constants.py`
+- **Environment-dependent config** (feature flags, third-party settings) → `config/settings/base.py`
+
 ## Python & Django Conventions
 
 **Models**
@@ -35,6 +48,7 @@ See `docs/brainstorm.md` for the full spec and `docs/roadmap.md` for the develop
 **URLs**
 - Every app's `urls.py` must declare `app_name` for namespacing
 - Use `{% url 'app:name' %}` in templates, never hardcoded paths
+- URL slugs are in English (e.g. `login/`, `register/`, `farms/`)
 
 **Forms**
 - Add `class="form-control"` (or appropriate Bootstrap class) to all field widgets
