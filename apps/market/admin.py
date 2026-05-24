@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Listing, Order, OrderItem, Week, WantedListing, WantedResponse
+from .models import Listing, Order, OrderItem, WantedListing, WantedResponse, Week
 
 
 @admin.register(Week)
@@ -21,7 +21,7 @@ class ListingAdmin(admin.ModelAdmin):
     list_display = ["farm_product", "farm", "week", "quantity_available", "unit", "price_per_unit", "is_active"]
     list_filter = ["farm", "week", "is_active"]
     search_fields = ["farm_product__name", "farm__name"]
-    select_related = ["farm_product", "farm", "week"]
+    list_select_related = ["farm_product", "farm", "week"]
 
 
 @admin.register(Order)

@@ -11,7 +11,6 @@ from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from apps.farms.models import CropCategory, Farm, FarmFollow, FarmProduct
 from apps.market.models import Listing, Week
@@ -212,8 +211,6 @@ class Command(BaseCommand):
 
     def _seed_follows(self, farms):
         # Each farm follows the other two
-        from apps.farms.models import FarmFollow
-
         pairs = [(farms[0], farms[1]), (farms[0], farms[2]), (farms[1], farms[2]), (farms[1], farms[0]), (farms[2], farms[0]), (farms[2], farms[1])]
         for follower, followed in pairs:
             _, created = FarmFollow.objects.get_or_create(follower_farm=follower, followed_farm=followed)

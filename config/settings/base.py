@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import environ
+from django.contrib.messages import constants as message_constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -99,8 +100,6 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/connexion/"
 
 # Bootstrap-compatible message tags
-from django.contrib.messages import constants as message_constants  # noqa: E402
-
 MESSAGE_TAGS = {
     message_constants.DEBUG: "secondary",
     message_constants.INFO: "info",

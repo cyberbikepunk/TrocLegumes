@@ -1,5 +1,6 @@
-import factory
 from datetime import date, timedelta
+
+import factory
 
 from apps.farms.tests.factories import FarmFactory, FarmProductFactory
 from apps.market.models import Listing, Order, OrderItem, WantedListing, WantedResponse, Week
