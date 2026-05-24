@@ -124,26 +124,29 @@ apps/<app>/tests/
 - Dev output is color-coded by level via `colorlog` (cyan/green/yellow/red)
 - Prod uses the same fields without color (plain `standard` formatter)
 
+## Code Review
+
+At the end of each phase, do a full review before moving on. The goal is to catch issues early, not after they compound.
+
+**What to check — in order:**
+
+1. **Models** — field types, `on_delete` choices, `null`/`blank` consistency, `__str__`, `Meta.ordering`, missing `verbose_name` on important fields
+2. **Migrations** — one migration per app, no hand-edits, no stale/unapplied migrations (`showmigrations`)
+3. **Admin** — every model registered, `list_display` / `search_fields` / `list_filter` set, inlines for related objects where useful, `autocomplete_fields` for FK fields (no raw icon buttons)
+4. **Views & URLs** — `app_name` declared, all views covered by a URL, login protection on every non-public view, no hardcoded paths in templates
+5. **Templates** — all extend `base.html`, use `{% url %}`, no inline styles, no business logic in templates
+6. **Tests** — every model has a factory, every `__str__` and custom method is tested, all views have a smoke test, 0 failures
+7. **Lint** — `ruff check .` passes with 0 errors
+8. **Security** — `{% csrf_token %}` on every POST form, no `mark_safe()` on user content, no secrets in code
+9. **Docker** — `python manage.py check` reports 0 issues, container starts cleanly
+
+**After the review:**
+- Fix everything found before starting the next phase
+- Run `make test` + `ruff check .` one final time
+- Commit as `Phase N: review fixes`
+
 ## Git Workflow
 
 - Work directly on `master` — no feature branches
 - Commit after every working increment: `git add . && git commit -m "..." && git push`
 - Commit messages: `Phase 1: add Farm model and admin`
-
-## Pre-commit Review
-
-Run this gate inside Docker before every commit:
-
-```bash
-sg docker -c "docker compose exec web ruff check . --fix && docker compose exec web pytest -q && docker compose exec web python manage.py check"
-```
-
-All three must pass (0 ruff errors, all tests green, no Django system check issues).
-
-**Self-review checklist before committing:**
-- No secrets or hardcoded credentials in code
-- Every new POST form has `{% csrf_token %}`
-- No `print()` calls — use `logger` instead
-- No bare `makemigrations` — always target the app explicitly
-- New FK fields in admin use `autocomplete_fields`, not the default widget
-- French user-facing text, English code
