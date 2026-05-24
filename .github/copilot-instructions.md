@@ -78,9 +78,33 @@ See `docs/brainstorm.md` for the full spec and `docs/roadmap.md` for the develop
 
 ## Testing
 
-- Tests go in `apps/<app>/tests/` — use `pytest` and `factory_boy`
-- Run with `make test` (runs inside Docker)
-- Every model needs a basic factory; every view needs a smoke test
+**Philosophy**: write tests after the code, not before. Each feature is complete when it works and has tests.
+
+**Stack**: `pytest` + `pytest-django` + `factory_boy`. Run with `make test` (inside Docker).
+
+**What to test:**
+- **Models** — custom properties, methods, and any non-trivial constraint
+- **Views** — HTTP status codes, login redirects, correct template used, basic form submission
+- **Business logic** — billing calculations, balance computation, expiry rules
+
+**What NOT to test:** Django internals, migrations, admin auto-registration, template markup.
+
+**Structure:**
+```
+apps/<app>/tests/
+    __init__.py
+    factories.py     # factory_boy factories for this app's models
+    test_models.py
+    test_views.py
+```
+
+**Rules:**
+- Every model gets a factory in `factories.py`
+- Every view gets at least a smoke test (GET returns 200, unauthenticated redirects to login)
+- Complex business logic (tab, balance) gets its own focused test
+- Tests must pass before committing (`make test`)
+
+**CI:** GitHub Actions runs `make test` on every push to master — a failing test blocks deployment.
 
 ## Git Workflow
 
