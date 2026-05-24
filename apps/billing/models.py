@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
@@ -128,5 +129,6 @@ class TabEntry(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        sign = "+" if self.amount >= 0 else ""
-        return f"TabEntry {self.farm} {sign}{self.amount} € ({self.get_entry_type_display()})"
+        amount = Decimal(str(self.amount))
+        sign = "+" if amount >= 0 else ""
+        return f"TabEntry {self.farm} {sign}{amount} € ({self.get_entry_type_display()})"
