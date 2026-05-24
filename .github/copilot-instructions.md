@@ -129,3 +129,21 @@ apps/<app>/tests/
 - Work directly on `master` — no feature branches
 - Commit after every working increment: `git add . && git commit -m "..." && git push`
 - Commit messages: `Phase 1: add Farm model and admin`
+
+## Pre-commit Review
+
+Run this gate inside Docker before every commit:
+
+```bash
+sg docker -c "docker compose exec web ruff check . --fix && docker compose exec web pytest -q && docker compose exec web python manage.py check"
+```
+
+All three must pass (0 ruff errors, all tests green, no Django system check issues).
+
+**Self-review checklist before committing:**
+- No secrets or hardcoded credentials in code
+- Every new POST form has `{% csrf_token %}`
+- No `print()` calls — use `logger` instead
+- No bare `makemigrations` — always target the app explicitly
+- New FK fields in admin use `autocomplete_fields`, not the default widget
+- French user-facing text, English code
