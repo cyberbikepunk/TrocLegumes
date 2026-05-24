@@ -28,10 +28,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=100, verbose_name="Prénom")
     last_name = models.CharField(max_length=100, verbose_name="Nom")
     phone = models.CharField(max_length=20, blank=True, verbose_name="Téléphone")
+    farm = models.ForeignKey(
+        "farms.Farm",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="members",
+        verbose_name="Ferme",
+    )
     role = models.CharField(
         max_length=20, choices=Role.choices, default=Role.PRODUCER, verbose_name="Rôle"
     )
-    # farm FK will be added in Phase 1 (ForeignKey to farms.Farm)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
