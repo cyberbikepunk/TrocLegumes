@@ -84,6 +84,6 @@ See `docs/brainstorm.md` for the full spec and `docs/roadmap.md` for the develop
 
 ## Git Workflow
 
-- Branch per feature: `git checkout -b phase-1/farms-model`
+- Work directly on `master` — no feature branches
+- Commit after every working increment: `git add . && git commit -m "..." && git push`
 - Commit messages: `Phase 1: add Farm model and admin`
-- Push after every working increment: `git push`
