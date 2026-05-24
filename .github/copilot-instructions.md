@@ -106,6 +106,8 @@ apps/<app>/tests/
 
 **CI:** GitHub Actions runs `make test` on every push to master — a failing test blocks deployment.
 
+> **Current status:** dev-only, no deployment yet. CI will be wired up before production.
+
 ## Git Workflow
 
 - Work directly on `master` — no feature branches
