@@ -116,6 +116,14 @@ apps/<app>/tests/
 - Never use `print()` for diagnostic output — use the logger
 - In dev, logs appear in `docker compose logs web`; in prod they will go to Sentry
 
+**Standard log format:** `TIMESTAMP LEVEL    logger funcName():line — message`
+```
+2026-05-24 01:12:34 INFO     apps.market.views create_order():87 — Order #42 created by user 7
+```
+- Fields: timestamp (`%Y-%m-%d %H:%M:%S`), level (padded to 8 chars), logger (`__name__`), function, line, message
+- Dev output is color-coded by level via `colorlog` (cyan/green/yellow/red)
+- Prod uses the same fields without color (plain `standard` formatter)
+
 ## Git Workflow
 
 - Work directly on `master` — no feature branches

@@ -4,3 +4,4 @@ django-environ>=0.11
 gunicorn>=22.0
 celery[redis]>=5.4
 django-htmx>=1.21
+colorlog>=6.0
