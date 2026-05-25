@@ -1,9 +1,9 @@
 {% if can_follow %}
-<form id="follow-btn"
+<form id="follow-btn-{{ farm.pk }}"
       method="post"
       action="{% url 'farms:follow_toggle' farm.pk %}"
       hx-post="{% url 'farms:follow_toggle' farm.pk %}"
-      hx-target="#follow-btn"
+      hx-target="#follow-btn-{{ farm.pk }}"
       hx-swap="outerHTML">
     {% csrf_token %}
     {% if is_following %}

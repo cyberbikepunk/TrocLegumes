@@ -3,7 +3,7 @@
 {% block title %}{{ farm.name }} — TrocLégumes{% endblock %}
 
 {% block extra_css %}
-{% if farm.latitude and farm.longitude %}
+{% if farm_lat %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% endif %}
 {% endblock %}
@@ -92,14 +92,14 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if farm.latitude and farm.longitude %}
+{% if farm_lat %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    var map = L.map('map').setView([{{ farm.latitude }}, {{ farm.longitude }}], 13);
+    var map = L.map('map').setView([{{ farm_lat }}, {{ farm_lon }}], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    L.marker([{{ farm.latitude }}, {{ farm.longitude }}])
+    L.marker([{{ farm_lat }}, {{ farm_lon }}])
         .addTo(map)
         .bindPopup('<strong>{{ farm.name }}</strong>');
 </script>

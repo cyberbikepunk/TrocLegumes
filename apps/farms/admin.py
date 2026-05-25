@@ -7,7 +7,7 @@ from .models import CropCategory, Farm, FarmFollow, FarmProduct, Invitation
 
 @admin.register(Farm)
 class FarmAdmin(UnfoldModelAdmin):
-    list_display = ["name", "phone", "is_active", "created_at"]
+    list_display = ["name", "address", "phone", "is_active", "latitude", "longitude", "created_at"]
     list_filter = ["is_active"]
     search_fields = ["name", "address"]
 

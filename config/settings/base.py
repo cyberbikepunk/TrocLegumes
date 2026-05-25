@@ -112,6 +112,8 @@ MESSAGE_TAGS = {
     message_constants.ERROR: "danger",
 }
 
+GEOCODING_USER_AGENT = env("GEOCODING_USER_AGENT", default="TrocLégumes/1.0")
+
 # Celery — fully configured in Phase 7
 CELERY_BROKER_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = env("REDIS_URL", default="redis://localhost:6379/0")

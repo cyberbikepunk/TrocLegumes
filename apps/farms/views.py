@@ -11,6 +11,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView, V
 
 from .forms import FarmForm
 from .models import Farm, FarmFollow
+from .utils import haversine_km
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,43 @@ class FarmListView(ListView):
     template_name = "farms/farm_list.html"
     context_object_name = "farms"
     queryset = Farm.objects.filter(is_active=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        farms = list(context["farms"])
+        user = self.request.user
+        if (
+            user.is_authenticated
+            and user.farm_id
+            and user.farm.latitude is not None
+            and user.farm.longitude is not None
+        ):
+            lat0, lon0 = user.farm.latitude, user.farm.longitude
+            for farm in farms:
+                if farm.latitude is not None and farm.longitude is not None:
+                    farm.distance_km = round(haversine_km(lat0, lon0, farm.latitude, farm.longitude), 1)
+                else:
+                    farm.distance_km = None
+            farms.sort(key=lambda f: (f.distance_km is None, f.distance_km or 0))
+            context["user_has_location"] = True
+        else:
+            for farm in farms:
+                farm.distance_km = None
+            context["user_has_location"] = False
+        context["farms"] = farms
+        if user.is_authenticated and user.farm_id:
+            following_pks = set(
+                FarmFollow.objects.filter(follower_farm_id=user.farm_id)
+                .values_list("followed_farm_id", flat=True)
+            )
+            for farm in farms:
+                farm.is_following = farm.pk in following_pks
+            context["can_follow"] = True
+        else:
+            for farm in farms:
+                farm.is_following = False
+            context["can_follow"] = False
+        return context
 
 
 class FarmDetailView(DetailView):
@@ -42,6 +80,9 @@ class FarmDetailView(DetailView):
         ).exists()
         context["followers_count"] = farm.followers.count()
         context["products"] = farm.products.filter(is_active=True).select_related("crop_category")
+        if farm.latitude and farm.longitude:
+            context["farm_lat"] = float(farm.latitude)
+            context["farm_lon"] = float(farm.longitude)
         return context
 
 

@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 from django.db import IntegrityError
 
@@ -64,3 +66,32 @@ class TestInvitation:
     def test_str_includes_email(self):
         invitation = InvitationFactory(email="test@example.com")
         assert "test@example.com" in str(invitation)
+
+
+class TestFarmGeocoding:
+    def test_geocode_sets_coordinates_on_save(self):
+        mock_location = MagicMock()
+        mock_location.latitude = 48.8566
+        mock_location.longitude = 2.3522
+        with patch("apps.farms.models.Farm._geocode_address") as mock_geocode:
+            FarmFactory(address="Paris, France")
+        mock_geocode.assert_called_once()
+
+    def test_geocode_address_updates_lat_lon(self):
+        farm = FarmFactory(address="")
+        mock_location = MagicMock(latitude=48.8566, longitude=2.3522)
+        with patch("geopy.geocoders.Nominatim.geocode", return_value=mock_location):
+            farm.address = "Paris, France"
+            farm.save()
+        farm.refresh_from_db()
+        assert farm.latitude == pytest.approx(48.8566)
+        assert farm.longitude == pytest.approx(2.3522)
+
+    def test_address_change_clears_coordinates(self):
+        farm = FarmFactory(address="Lyon", latitude=45.76, longitude=4.83)
+        with patch("apps.farms.models.Farm._geocode_address"):
+            farm.address = "Marseille"
+            farm.save()
+        farm.refresh_from_db()
+        assert farm.latitude is None
+        assert farm.longitude is None

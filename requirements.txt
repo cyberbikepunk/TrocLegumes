@@ -7,3 +7,4 @@ django-htmx>=1.21
 colorlog>=6.0
 Pillow>=10.0
 django-unfold
+geopy>=2.0

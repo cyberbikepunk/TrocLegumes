@@ -4,7 +4,12 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Les fermes</h1>
+    <h1 class="h3 mb-0">
+        Les fermes
+        {% if user_has_location %}
+        <span class="fs-6 fw-normal text-muted ms-2">— triées par distance</span>
+        {% endif %}
+    </h1>
     {% if user.is_authenticated and not user.farm %}
     <a href="{% url 'farms:create' %}" class="btn btn-success">
         <i class="bi bi-plus-circle me-1"></i>Créer ma ferme
@@ -21,7 +26,18 @@
                  style="height: 180px; object-fit: cover;">
             {% endif %}
             <div class="card-body">
-                <h5 class="card-title">{{ farm.name }}</h5>
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <h5 class="card-title mb-0">{{ farm.name }}</h5>
+                    {% if farm.distance_km is not None %}
+                    <span class="badge bg-light text-secondary border ms-2 text-nowrap">
+                        <i class="bi bi-signpost-split me-1"></i>~{{ farm.distance_km }} km
+                    </span>
+                    {% elif farm.latitude and farm.longitude %}
+                    <span class="badge bg-light text-secondary border ms-2 text-nowrap">
+                        <i class="bi bi-geo-alt me-1"></i>Géolocalisée
+                    </span>
+                    {% endif %}
+                </div>
                 {% if farm.description %}
                 <p class="card-text text-muted small">{{ farm.description|truncatewords:20 }}</p>
                 {% endif %}
@@ -31,10 +47,13 @@
                 </p>
                 {% endif %}
             </div>
-            <div class="card-footer bg-transparent">
+            <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
                 <a href="{% url 'farms:detail' farm.pk %}" class="btn btn-sm btn-outline-success">
                     Voir le profil <i class="bi bi-arrow-right ms-1"></i>
                 </a>
+                {% if can_follow and farm.pk != user.farm.pk %}
+                {% include "farms/partials/follow_button.html" with is_following=farm.is_following %}
+                {% endif %}
             </div>
         </div>
     </div>

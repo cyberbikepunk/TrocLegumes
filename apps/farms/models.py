@@ -27,6 +27,46 @@ class Farm(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        # Clear stale coordinates when the address changes on an existing farm
+        if self.pk and self.address:
+            try:
+                old = Farm.objects.get(pk=self.pk)
+                if old.address != self.address:
+                    self.latitude = None
+                    self.longitude = None
+            except Farm.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+        if self.address and not (self.latitude and self.longitude):
+            self._geocode_address()
+
+    def _geocode_address(self):
+        from django.conf import settings
+        from geopy.exc import GeocoderServiceError, GeocoderTimedOut
+        from geopy.geocoders import Nominatim
+
+        try:
+            geolocator = Nominatim(user_agent=settings.GEOCODING_USER_AGENT)
+            location = geolocator.geocode(self.address, timeout=10)
+            if location:
+                Farm.objects.filter(pk=self.pk).update(
+                    latitude=location.latitude,
+                    longitude=location.longitude,
+                )
+                self.latitude = location.latitude
+                self.longitude = location.longitude
+                logger.info(
+                    "Geocoded farm %d '%s': (%.4f, %.4f)",
+                    self.pk, self.name, self.latitude, self.longitude,
+                )
+            else:
+                logger.warning(
+                    "No geocoding result for farm %d address: %s", self.pk, self.address
+                )
+        except (GeocoderTimedOut, GeocoderServiceError) as exc:
+            logger.error("Geocoding error for farm %d: %s", self.pk, exc)
+
 
 class CropCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nom")

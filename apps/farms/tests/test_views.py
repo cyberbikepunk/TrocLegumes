@@ -149,3 +149,22 @@ class TestFollowToggleView:
         assert not FarmFollow.objects.filter(
             follower_farm=user_with_farm.farm, followed_farm=user_with_farm.farm
         ).exists()
+
+
+class TestFarmListFollowContext:
+    def test_can_follow_false_for_unauthenticated(self, client, farm):
+        response = client.get(reverse("farms:list"))
+        assert response.context["can_follow"] is False
+
+    def test_can_follow_true_for_user_with_farm(self, client, user_with_farm, other_farm):
+        client.force_login(user_with_farm)
+        response = client.get(reverse("farms:list"))
+        assert response.context["can_follow"] is True
+
+    def test_is_following_annotated_on_farms(self, client, user_with_farm, other_farm):
+        FarmFollowFactory(follower_farm=user_with_farm.farm, followed_farm=other_farm)
+        client.force_login(user_with_farm)
+        response = client.get(reverse("farms:list"))
+        farms = {f.pk: f for f in response.context["farms"]}
+        assert farms[other_farm.pk].is_following is True
+        assert farms[user_with_farm.farm.pk].is_following is False
