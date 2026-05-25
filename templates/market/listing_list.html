@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes annonces — TrocLégumes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Mes annonces</h1>
+        {% if active_week %}
+        <small class="text-muted">Semaine active : {{ active_week }}</small>
+        {% else %}
+        <small class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Pas de semaine active</small>
+        {% endif %}
+    </div>
+    {% if active_week %}
+    <a href="{% url 'market:listing_create' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>Nouvelle annonce
+    </a>
+    {% endif %}
+</div>
+
+{% if listings %}
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Produit</th>
+                <th>Semaine</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Statut</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings %}
+            <tr>
+                <td>
+                    <span class="fw-semibold">{{ listing.farm_product.name }}</span>
+                    <br><small class="text-muted">{{ listing.farm_product.crop_category }}</small>
+                </td>
+                <td class="text-muted small">{{ listing.week }}</td>
+                <td>{{ listing.quantity_available }} {{ listing.get_unit_display }}</td>
+                <td>{{ listing.price_per_unit }} €</td>
+                <td>
+                    {% if listing.is_active %}
+                    <span class="badge text-bg-success">Active</span>
+                    {% else %}
+                    <span class="badge text-bg-secondary">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    <a href="{% url 'market:listing_update' listing.pk %}"
+                       class="btn btn-sm btn-outline-success me-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'market:listing_delete' listing.pk %}"
+                       class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-megaphone display-4 d-block mb-3"></i>
+    <p class="mb-3">Vous n'avez pas encore d'annonces.</p>
+    {% if active_week %}
+    <a href="{% url 'market:listing_create' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>Créer votre première annonce
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

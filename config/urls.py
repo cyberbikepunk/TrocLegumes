@@ -9,6 +9,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("apps.accounts.urls")),
     path("fermes/", include("apps.farms.urls")),
+    path("marche/", include("apps.market.urls")),
     path("", DashboardView.as_view(), name="dashboard"),
 ]
 

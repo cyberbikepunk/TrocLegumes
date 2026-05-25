@@ -6,11 +6,11 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
-from django.urls import reverse
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, View
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 
-from .forms import FarmForm
-from .models import Farm, FarmFollow
+from .forms import FarmForm, FarmProductForm
+from .models import Farm, FarmFollow, FarmProduct
 from .utils import haversine_km
 
 logger = logging.getLogger(__name__)
@@ -163,3 +163,85 @@ class FollowToggleView(LoginRequiredMixin, View):
             request=request,
         )
         return HttpResponse(html)
+
+
+class FarmProductListView(LoginRequiredMixin, ListView):
+    model = FarmProduct
+    template_name = "farms/farm_product_list.html"
+    context_object_name = "products"
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and not request.user.farm_id:
+            messages.warning(request, "Vous devez d'abord créer votre ferme.")
+            return redirect("farms:create")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return FarmProduct.objects.filter(farm=self.request.user.farm).select_related("crop_category")
+
+
+class FarmProductCreateView(LoginRequiredMixin, CreateView):
+    model = FarmProduct
+    form_class = FarmProductForm
+    template_name = "farms/farm_product_form.html"
+    success_url = reverse_lazy("farms:product_list")
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and not request.user.farm_id:
+            messages.warning(request, "Vous devez d'abord créer votre ferme.")
+            return redirect("farms:create")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        product = form.save(commit=False)
+        product.farm = self.request.user.farm
+        product.save()
+        logger.info("FarmProduct %d '%s' created by user %d", product.pk, product.name, self.request.user.pk)
+        messages.success(self.request, f"Le produit « {product.name} » a été ajouté.")
+        return redirect(self.success_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["action"] = "Ajouter un produit"
+        return context
+
+
+class FarmProductUpdateView(LoginRequiredMixin, UpdateView):
+    model = FarmProduct
+    form_class = FarmProductForm
+    template_name = "farms/farm_product_form.html"
+    success_url = reverse_lazy("farms:product_list")
+
+    def get_object(self, queryset=None):
+        product = super().get_object(queryset)
+        if product.farm_id != self.request.user.farm_id:
+            raise PermissionDenied
+        return product
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        logger.info("FarmProduct %d updated by user %d", self.object.pk, self.request.user.pk)
+        messages.success(self.request, f"Le produit « {self.object.name} » a été mis à jour.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["action"] = "Modifier le produit"
+        return context
+
+
+class FarmProductDeleteView(LoginRequiredMixin, DeleteView):
+    model = FarmProduct
+    template_name = "farms/farm_product_confirm_delete.html"
+    success_url = reverse_lazy("farms:product_list")
+
+    def get_object(self, queryset=None):
+        product = super().get_object(queryset)
+        if product.farm_id != self.request.user.farm_id:
+            raise PermissionDenied
+        return product
+
+    def form_valid(self, form):
+        logger.info("FarmProduct %d deleted by user %d", self.object.pk, self.request.user.pk)
+        messages.success(self.request, f"Le produit « {self.object.name} » a été supprimé.")
+        return super().form_valid(form)

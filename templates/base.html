@@ -23,10 +23,25 @@
             <ul class="navbar-nav me-auto">
                 {% if user.is_authenticated %}
                 <li class="nav-item"><a class="nav-link" href="{% url 'farms:list' %}">Fermes</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Marché</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'market:marketplace' %}">Marché</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Commandes</a></li>
                 {% if user.farm %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'farms:detail' user.farm.pk %}">Ma ferme</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Ma ferme
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'farms:detail' user.farm.pk %}">
+                            <i class="bi bi-house me-1"></i>Profil
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'farms:product_list' %}">
+                            <i class="bi bi-basket me-1"></i>Mes produits
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'market:listing_list' %}">
+                            <i class="bi bi-megaphone me-1"></i>Mes annonces
+                        </a></li>
+                    </ul>
+                </li>
                 {% else %}
                 <li class="nav-item"><a class="nav-link" href="{% url 'farms:create' %}">Créer ma ferme</a></li>
                 {% endif %}

@@ -9,3 +9,7 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.dev"
 python_files = ["tests.py", "test_*.py", "*_test.py"]
+
+[tool.pyright]
+# django-unfold's mixins have type signatures incompatible with django-stubs — known upstream issue
+reportIncompatibleMethodOverride = "none"

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Marché — TrocLégumes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Marché</h1>
+        {% if active_week %}
+        <small class="text-muted">{{ active_week }}</small>
+        {% endif %}
+    </div>
+    {% if user.is_authenticated and user.farm %}
+    <a href="{% url 'market:listing_list' %}" class="btn btn-outline-success btn-sm">
+        <i class="bi bi-megaphone me-1"></i>Mes annonces
+    </a>
+    {% endif %}
+</div>
+
+{% if not active_week %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-calendar-x display-4 d-block mb-3"></i>
+    <p>Aucune semaine de marché n'est active pour le moment.</p>
+    <p class="small">Revenez bientôt !</p>
+</div>
+
+{% elif not listings_followed and not listings_others and not listings_own %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-basket display-4 d-block mb-3"></i>
+    <p>Aucune annonce cette semaine.</p>
+</div>
+
+{% else %}
+
+{% if listings_own %}
+<section class="mb-5">
+    <h2 class="h5 text-success mb-3">
+        <i class="bi bi-shop me-1"></i>Mes annonces
+    </h2>
+    {% include "market/partials/listing_cards.html" with listings=listings_own %}
+</section>
+{% endif %}
+
+{% if listings_followed %}
+<section class="mb-5">
+    <h2 class="h5 text-success mb-3">
+        <i class="bi bi-heart me-1"></i>Fermes suivies
+    </h2>
+    {% include "market/partials/listing_cards.html" with listings=listings_followed %}
+</section>
+{% endif %}
+
+{% if listings_others %}
+<section class="mb-5">
+    <h2 class="h5 text-muted mb-3">
+        <i class="bi bi-grid me-1"></i>Autres fermes
+    </h2>
+    {% include "market/partials/listing_cards.html" with listings=listings_others %}
+</section>
+{% endif %}
+
+{% endif %}
+{% endblock %}

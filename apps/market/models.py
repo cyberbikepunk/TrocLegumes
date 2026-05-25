@@ -21,6 +21,11 @@ class Week(models.Model):
     def __str__(self):
         return f"Semaine du {self.start_date} au {self.end_date}"
 
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            Week.objects.exclude(pk=self.pk).filter(is_active=True).update(is_active=False)
+        super().save(*args, **kwargs)
+
 
 class Listing(models.Model):
     farm_product = models.ForeignKey(

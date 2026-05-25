@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer l'annonce — TrocLégumes{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="h3 mb-4">Supprimer l'annonce</h1>
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Êtes-vous sûr de vouloir supprimer l'annonce pour
+            <strong>{{ object.farm_product.name }}</strong> ({{ object.week }}) ?
+            Cette action est irréversible.
+        </div>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i>Supprimer
+                </button>
+                <a href="{% url 'market:listing_list' %}" class="btn btn-outline-secondary">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

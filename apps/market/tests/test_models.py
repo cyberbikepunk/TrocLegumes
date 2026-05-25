@@ -21,6 +21,24 @@ class TestWeekStr:
         assert "2026-05-24" in str(week)
 
 
+class TestWeekSave:
+    def test_activating_week_deactivates_others(self):
+        week1 = WeekFactory(is_active=True)
+        week2 = WeekFactory(is_active=False)
+        week2.is_active = True
+        week2.save()
+        week1.refresh_from_db()
+        assert not week1.is_active
+        assert week2.is_active
+
+    def test_inactive_week_does_not_affect_others(self):
+        week1 = WeekFactory(is_active=True)
+        week2 = WeekFactory(is_active=False)
+        week2.save()
+        week1.refresh_from_db()
+        assert week1.is_active
+
+
 class TestListingStr:
     def test_str_includes_product_name_and_farm(self):
         listing = ListingFactory()
