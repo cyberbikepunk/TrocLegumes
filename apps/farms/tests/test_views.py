@@ -43,6 +43,13 @@ class TestFarmListView:
         assert active in response.context["farms"]
         assert inactive not in response.context["farms"]
 
+    def test_context_has_map_data(self, client, user_with_farm, other_farm):
+        client.force_login(user_with_farm)
+        response = client.get(reverse("farms:list"))
+        assert "map_farms" in response.context
+        assert "map_farms_json" in response.context
+        assert "map_center_json" in response.context
+
 
 class TestFarmDetailView:
     def test_get_returns_200(self, client, farm):

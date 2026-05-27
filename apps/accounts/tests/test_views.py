@@ -79,10 +79,3 @@ class TestDashboardView:
         client.force_login(user_with_farm)
         response = client.get(reverse("dashboard"))
         assert "followed_farms" in response.context
-
-    def test_context_has_map_data(self, client, user_with_farm):
-        client.force_login(user_with_farm)
-        response = client.get(reverse("dashboard"))
-        assert "map_farms" in response.context
-        assert "map_farms_json" in response.context
-        assert "map_center_json" in response.context

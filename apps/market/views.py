@@ -152,6 +152,7 @@ class ListingUpdateView(LoginRequiredMixin, _ListingOwnerMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["action"] = "Modifier l'annonce"
+        context["active_week"] = self.object.week
         return context
 
 

@@ -22,7 +22,7 @@ Each phase ends with something runnable and testable.
 - Farm profile pages (public view + edit)
 - User → Farm link (registration flow)
 - Follow / unfollow
-- Farm map (lat/lng, Leaflet.js or simple static map)
+- Farm map (lat/lng, Leaflet.js or simple static map) — displayed in `/fermes/`, not on the dashboard
 
 ## Phase 3 — Weekly Listings & Marketplace
 - `farm_products` CRUD

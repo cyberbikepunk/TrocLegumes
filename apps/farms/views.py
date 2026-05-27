@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.contrib import messages
@@ -9,6 +10,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 
+from .constants import MAP_RADIUS_KM
 from .forms import FarmForm, FarmProductForm
 from .models import Farm, FarmFollow, FarmProduct
 from .utils import haversine_km
@@ -26,6 +28,8 @@ class FarmListView(ListView):
         context = super().get_context_data(**kwargs)
         farms = list(context["farms"])
         user = self.request.user
+
+        # Distance sorting
         if (
             user.is_authenticated
             and user.farm_id
@@ -45,6 +49,8 @@ class FarmListView(ListView):
                 farm.distance_km = None
             context["user_has_location"] = False
         context["farms"] = farms
+
+        # Follow state
         if user.is_authenticated and user.farm_id:
             following_pks = set(
                 FarmFollow.objects.filter(follower_farm_id=user.farm_id)
@@ -54,9 +60,41 @@ class FarmListView(ListView):
                 farm.is_following = farm.pk in following_pks
             context["can_follow"] = True
         else:
+            following_pks = set()
             for farm in farms:
                 farm.is_following = False
             context["can_follow"] = False
+
+        # Map data
+        farms_with_coords = [f for f in farms if f.latitude is not None and f.longitude is not None]
+        if user.is_authenticated and user.farm_id and user.farm.latitude and user.farm.longitude:
+            lat0, lon0 = float(user.farm.latitude), float(user.farm.longitude)
+            nearby_pks = {
+                f.pk for f in farms_with_coords
+                if haversine_km(lat0, lon0, f.latitude, f.longitude) <= MAP_RADIUS_KM
+            }
+            all_pks = nearby_pks | (following_pks & {f.pk for f in farms_with_coords})
+            map_farms = [f for f in farms_with_coords if f.pk in all_pks]
+            context["map_farms_json"] = json.dumps([
+                {"lat": float(f.latitude), "lng": float(f.longitude), "name": f.name,
+                 "url": reverse("farms:detail", args=[f.pk]),
+                 "followed": f.pk in following_pks}
+                for f in map_farms
+            ])
+            context["map_center_json"] = json.dumps([lat0, lon0])
+            context["map_zoom"] = 9
+        else:
+            map_farms = farms_with_coords
+            context["map_farms_json"] = json.dumps([
+                {"lat": float(f.latitude), "lng": float(f.longitude), "name": f.name,
+                 "url": reverse("farms:detail", args=[f.pk]),
+                 "followed": f.pk in following_pks}
+                for f in map_farms
+            ])
+            context["map_center_json"] = "null"
+            context["map_zoom"] = 6
+        context["map_farms"] = map_farms
+
         return context
 
 
@@ -242,6 +280,14 @@ class FarmProductDeleteView(LoginRequiredMixin, DeleteView):
         return product
 
     def form_valid(self, form):
-        logger.info("FarmProduct %d deleted by user %d", self.object.pk, self.request.user.pk)
-        messages.success(self.request, f"Le produit « {self.object.name} » a été supprimé.")
-        return super().form_valid(form)
+        from django.db import models as db_models
+        try:
+            logger.info("FarmProduct %d deleted by user %d", self.object.pk, self.request.user.pk)
+            messages.success(self.request, f"Le produit « {self.object.name} » a été supprimé.")
+            return super().form_valid(form)
+        except db_models.ProtectedError:
+            messages.error(
+                self.request,
+                f"« {self.object.name} » ne peut pas être supprimé car il est utilisé dans des annonces."
+            )
+            return redirect(self.success_url)

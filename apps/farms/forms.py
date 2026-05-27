@@ -29,4 +29,5 @@ class FarmProductForm(forms.ModelForm):
             "default_unit": forms.Select(attrs={"class": "form-select"}),
             "default_price": forms.NumberInput(attrs={"class": "form-control", "step": "0.01", "min": "0"}),
             "photo": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "is_active": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }

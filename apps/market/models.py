@@ -70,6 +70,12 @@ class Listing(models.Model):
         verbose_name = "Annonce"
         verbose_name_plural = "Annonces"
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["farm", "farm_product", "week"],
+                name="unique_listing_per_farm_product_week",
+            )
+        ]
 
     def __str__(self):
         return f"{self.farm_product.name} — {self.farm} ({self.week})"
