@@ -1,0 +1,13 @@
+/* Card image heights */
+.card-img-farm       { height: 180px; object-fit: cover; }
+.card-img-product    { height: 160px; object-fit: cover; }
+.card-img-listing    { height: 140px; object-fit: cover; }
+.card-img-product-sm { height: 100px; object-fit: cover; }
+.farm-logo           { width: 72px; height: 72px; object-fit: cover; }
+
+/* Leaflet map containers */
+.map-container-lg { height: 420px; border-radius: var(--bs-border-radius); }
+.map-container-md { height: 280px; border-radius: var(--bs-border-radius); }
+
+/* Typography */
+.text-xs { font-size: 0.75rem; }

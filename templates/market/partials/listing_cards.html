@@ -3,8 +3,8 @@
     <div class="col">
         <div class="card h-100">
             {% if listing.farm_product.photo %}
-            <img src="{{ listing.farm_product.photo.url }}" class="card-img-top"
-                 alt="{{ listing.farm_product.name }}" style="height: 140px; object-fit: cover;">
+            <img src="{{ listing.farm_product.photo.url }}" class="card-img-top card-img-listing"
+                 alt="{{ listing.farm_product.name }}" width="400" height="140">
             {% endif %}
             <div class="card-body">
                 <h6 class="card-title mb-1">{{ listing.farm_product.name }}</h6>

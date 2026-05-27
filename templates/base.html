@@ -1,18 +1,22 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TrocLégumes{% endblock %}</title>
+    <meta name="description" content="TrocLégumes — plateforme d'échange et de vente directe entre maraîchers.">
+    <meta name="keywords" content="maraîchage, légumes, échange, vente directe, circuits courts">
+    <title>{% block title %}TrocLégumes{% endblock title %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% block extra_css %}{% endblock extra_css %}
 </head>
 <body class="bg-light">
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">
+        <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">
             <i class="bi bi-basket2-fill me-1"></i> TrocLégumes
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -85,11 +89,11 @@
     </div>
     {% endif %}
 
-    {% block content %}{% endblock %}
+    {% block content %}{% endblock content %}
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
-{% block extra_js %}{% endblock %}
+{% block extra_js %}{% endblock extra_js %}
 </body>
 </html>
